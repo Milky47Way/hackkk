@@ -142,7 +142,7 @@ def load_tif_image(path, size):
 
 def load_images():
     backgrounds = {
-        "main_menu": load_tif_image('img/Цей бешкетник може бути де завгодно! (1).tif', (800, 600)),
+        "main_menu": load_tif_image('img/menu.tif', (800, 600)),
         "menu_game":  load_tif_image('img/menu_game.tif', (800, 600)),
         "set": load_tif_image('img/set.tif', (800, 600)),
 
@@ -289,18 +289,20 @@ def main_menu():
     while True:
         back.fill(white)
         back.blit(backgrounds["main_menu"], (0, 0))
-        button_x = width - 220
-        buttonSet_y = 450
+        button_x = width - 251
+        button_xs = width - 725
 
-        buttonI_y = 300
-        buttonS_y = 150
+        buttonSet_y = 520
+
+        buttonI_y = 373
+        buttonS_y = 438
 
         button_w = 180
-        button_h = 60
+        button_h = 56
 
-        draw_button("Start", button_x, buttonS_y, button_w, button_h, (116, 122, 82), (156, 162, 118), start_backk, 255, 0)
-        draw_button("Info", button_x, buttonI_y, button_w, button_h, (137, 97, 111), (170, 131, 144), info_back, 255, 0)
-        draw_button("Settings", button_x, buttonSet_y, button_w, button_h, (200, 150, 100), (213, 171, 129), settings_back, 255, 0)
+        draw_button("Start", button_x, buttonS_y, button_w, button_h, (124, 128, 81), (156, 162, 118), start_backk, 255, 50)
+        draw_button("Info", button_x, buttonI_y, button_w, button_h, (197, 143, 99), (213, 171, 129), info_back, 255, 50)
+        draw_button("Settings", button_xs, buttonSet_y, button_w, button_h, (58, 57, 70), (89, 85, 104), settings_back, 255, 50)
 
         for event in pygame.event.get():
                         if event.type == pygame.QUIT:
