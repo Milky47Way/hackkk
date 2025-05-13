@@ -43,7 +43,7 @@ class Rain:
         self.y = random.randint(-600, 0)
         self.length = random.randint(10, 20)
         self.speed = random.uniform(4, 10)
-        self.color = (180, 180, 255)
+        self.color = (129, 164, 197)
 
     def fall(self):
         self.y += self.speed
@@ -53,7 +53,6 @@ class Rain:
 
     def draw(self, surface):
         pygame.draw.line(surface, self.color, (self.x, self.y), (self.x, self.y + self.length), 1)
-
 
 
 class Flower:
@@ -159,7 +158,7 @@ lab_map_4 = [
 ]
 
 CELL_SIZE = 38
-OFFSET_X, OFFSET_Y = 160, 19
+OFFSET_X, OFFSET_Y = 220, 19
 
 
 def draw_lab(surface, lab):

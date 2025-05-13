@@ -6,7 +6,7 @@ height = 600
 back = pygame.display.set_mode((width, height))
 
 CELL_SIZE = 38
-OFFSET_X, OFFSET_Y = 160, 19
+OFFSET_X, OFFSET_Y = 215, 14
 
 pygame.init()
 
@@ -22,22 +22,26 @@ def load_fonts():
 
 font8, font9, font10 = load_fonts()
 
-class Coin(pygame.sprite.Sprite):
+class Coin (pygame.sprite.Sprite):
     def __init__(self, x, y, coin_type='gold'):
         super().__init__()
         self.type = coin_type
 
         if self.type == 'gold':
             self.image = pygame.image.load('img/coin.png').convert_alpha()
+            self.image = pygame.transform.scale(self.image, (30, 30))
             self.value = 1
+
         elif self.type == 'silver':
-            self.image = pygame.image.load('img/coin.png').convert_alpha()
+            self.image = pygame.image.load('img/star.png').convert_alpha()
+            self.image = pygame.transform.scale(self.image, (35, 35))
             self.value = 2
+
         elif self.type == 'diamond':
-            self.image = pygame.image.load('img/STAR.png').convert_alpha()
+            self.image = pygame.image.load('img/paw.png').convert_alpha()
+            self.image = pygame.transform.scale(self.image, (45, 55))
             self.value = 5
 
-        self.image = pygame.transform.scale(self.image, (105, 105))
         self.rect = self.image.get_rect(topleft=(x, y))
 
     def draw(self, surface):
