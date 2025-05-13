@@ -47,11 +47,13 @@ def open_que():
     global show_lab_info
     show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
     show_lab_info = not show_lab_info
+    pygame.time.wait(100)
 
 def open_menu():
     global show_menu_info
     show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
     show_menu_info = not show_menu_info
+    pygame.time.wait(200)
 
 def show_queue_window(filename, width=300, height=300, x=None, y=150, bg_color=(137, 167, 200)):
     queue_window = pygame.Surface((width, height))
@@ -75,19 +77,6 @@ def show_queue_window(filename, width=300, height=300, x=None, y=150, bg_color=(
         x = screen_rect.centerx - width // 2
 
     back.blit(queue_window, (x, y))
-    pygame.display.update()
-
-    window_open = True
-    while window_open:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                window_open = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                window_open = False
-        pygame.display.update()
 
 def end_game():
     start_backk()
@@ -131,6 +120,18 @@ def draw_score(surface, score, last_coin_type):
     score_text = font10.render(f"Score: {score}", True, color)
     surface.blit(score_text, (50, 60))
 
+def draw_exit(surface, row, col, color=(255, 0, 0)):
+    pygame.draw.rect(
+        surface,
+        color,
+        pygame.Rect(
+            OFFSET_X + col * CELL_SIZE,
+            OFFSET_Y + row * CELL_SIZE,
+            CELL_SIZE,
+            CELL_SIZE
+        )
+    )
+
 #Зображення
 def load_tif_image(path, size):
     img = Image.open(path)
@@ -147,7 +148,7 @@ def load_images():
         "set": load_tif_image('img/set.tif', (800, 600)),
 
         "game1": load_tif_image('img/game1/game1.tif', (800, 600)),
-        "game11": load_tif_image('img/game1/game.back1.tif', (800, 600)),
+        "game11": load_tif_image('img/game1/game11.tif', (800, 600)),
 
         "game2": load_tif_image('img/game2/game2.tif', (800, 600)),
         "game22": load_tif_image('img/game2/game.back2.tif', (800, 600)),
@@ -186,7 +187,27 @@ def load_fonts():
 
 font8, font9, font10 = load_fonts()
 
+def pause_game():
+    global paused
+    paused = True
+    font_pause = pygame.font.SysFont('Verdana', 48)
+    while paused:
+        draw_button("Continue", width // 2 - 15, height // 2 - 50, 200, 60,
+                    (63, 91, 120), (137, 167, 200), unpause_game, 255, 20)
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                unpause_game()
+
+        pygame.display.update()
+        pygame.time.Clock().tick(10)
+
+def unpause_game():
+    global paused
+    paused = False
 
 #змінні
 white = (255, 255, 255)
@@ -203,6 +224,7 @@ chat_history = []
 tile_size = 40
 show_lab_info = False
 show_menu_info = False
+paused = False
 
 #вороги
 enemy1 = Enemy(0, 512, (200, 250), img_enemy1, (40,40), (1))
@@ -227,34 +249,39 @@ player = {
     2: (lab_map_2, "img/hero.png", (25, 33), 4),
     3: (lab_map_3, "img/hero.png", (25, 33), 3),
     4: (lab_map_4, "img/hero.png", (25, 33), 2),
-    5: (lab_map, "img/hero.png", (25, 33), 1),
+    5: (lab_map_5, "img/hero.png", (25, 33), 1),
 }
 
 players= {}
-
 for i in range(1, 6):
     spawn_x, spawn_y = find_spawn_point(player[i][0])
-    players[i] = Player(spawn_x, spawn_y, player[i][1], player[i][2], width, height, player[i][3])
 
+    players[i] = Player(spawn_x, spawn_y,player[i][1],player[i][2],width, height,player[i][3])
 
 #кнопки
 def draw_button(text, x, y, w, h, base_color, hover_color, action=None, alpha=255, border_radius=0):
+    global mouse_was_pressed
     mouse_pos = pygame.mouse.get_pos()
     rect = pygame.Rect(x, y, w, h)
     current_color = hover_color if rect.collidepoint(mouse_pos) else base_color
 
     button_surface = pygame.Surface((w, h), pygame.SRCALPHA)
-
-    pygame.draw.rect(button_surface,(*current_color, alpha), button_surface.get_rect(), border_radius=border_radius)
-
+    pygame.draw.rect(button_surface, (*current_color, alpha), button_surface.get_rect(), border_radius=border_radius)
     back.blit(button_surface, (x, y))
 
     text_surface = font9.render(text, True, (255, 255, 255))
     text_rect = text_surface.get_rect(center=rect.center)
     back.blit(text_surface, text_rect)
 
-    if action and pygame.mouse.get_pressed()[0] and rect.collidepoint(mouse_pos):
-        action()
+    mouse_pressed = pygame.mouse.get_pressed()[0]
+
+    if not mouse_pressed:
+        mouse_was_pressed = False
+
+    if mouse_pressed and rect.collidepoint(mouse_pos) and not mouse_was_pressed:
+        mouse_was_pressed = True
+        if action:
+            action()
 
 def draw_circle_button(text, x, y, radius, color, action=None, alpha=0):
     circle_surface = pygame.Surface((radius *  2, radius * 2), pygame.SRCALPHA)
@@ -350,67 +377,69 @@ def start_backk():
         pygame.time.wait(10)
         pygame.display.update()
 
-#меню лабіринт
 def game_four():
     global score, current_lab_map, coins, last_coin_type, current_level
-    win_timer_started = False
-    win_start_time = 0
-    victory_screen_shown = False
     current_level = 4
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
-
-    start_time = pygame.time.get_ticks()
     current_lab_map = lab_map_4
-    coins = generate_random_coins(lab_map, 20)
+    coins = generate_random_coins(current_lab_map, 2)  # Наприклад, 5 монет
+    total_coins = len(coins)
     last_coin_type = None
+
+    clock = pygame.time.Clock()
 
     while True:
         back.blit(backgrounds["game4"], (0, 0))
-        draw_lab(back, lab_map)
+        draw_lab(back, current_lab_map)
         draw_timer(back)
-
         draw_score(back, score, last_coin_type)
+        collected_coins = total_coins - len(coins)
+        enemies.update()
+        enemies.draw(back)
 
         for coin in coins:
             coin.draw(back)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                with open('res/txt/scores.txt', 'a') as f:
-                    f.write(f"Score: {score}\n")
-                pygame.quit()
-                sys.exit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return
-                if event.key == pygame.K_SPACE:
-                    coins, score, last_coin_type = collect_coin(coins, players[5], score, last_coin_type)
-
-            if not coins:
-                exit_row, exit_col = 13, 15
-                player_row = (players[4].rect.centery - OFFSET_Y) // CELL_SIZE
-                player_col = (players[4].rect.centerx - OFFSET_X) // CELL_SIZE
-                if (player_row, player_col) == (exit_row, exit_col):
-                    show_level_complete_window(4, backgrounds)
-                    return
-
-        enemies.update()
-        enemies.draw(back)
 
         players[4].update(current_lab_map)
         players[4].draw(back)
 
         if pygame.sprite.spritecollideany(players[4], enemies):
-            score = max(0, score - 3)
+            score = max(0, score - 4)
 
-        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu, 255, 50)
-        draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que, 0)
-        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (102, 95, 172), (131, 127, 189), toggle_music,255, 50)
+        # Кнопки
+        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38,
+                    (58, 69, 144), (67, 71, 173), toggle_music, 255, 50)
+        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38,
+                    (58, 69, 144), (67, 71, 173), open_menu, 255, 50)
+        draw_circle_button('', width // 2 - 290, height // 2 + 157, 30,
+                           (131, 127, 189), open_que, 0)
 
-        pygame.time.wait(10)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return
+                elif event.key == pygame.K_p:
+                    pause_game()
+
+        coins, score, last_coin_type = collect_coin(coins, players[4], score, last_coin_type)
+
+        if not coins:
+            exit_row, exit_col = 14, 11
+            #draw_exit(back, exit_row, exit_col)
+            player_row = (players[4].rect.centery - OFFSET_Y) // CELL_SIZE
+            player_col = (players[4].rect.centerx - OFFSET_X) // CELL_SIZE
+            if (player_row, player_col) == (exit_row, exit_col):
+                show_level_complete_window(4, backgrounds)
+                return
+        if show_menu_info:
+            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
+        if show_lab_info:
+            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
+        clock.tick(60)
         pygame.display.update()
-
 
 def game_one():
     global score, current_lab_map, coins, last_coin_type, current_level
@@ -441,11 +470,11 @@ def game_one():
         players[1].draw(back)
 
         if pygame.sprite.spritecollideany(players[1], enemies):
-            score = max(0, score - 3)
+            score = max(0, score - 1)
 
-        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu, 255,50)
+        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (58, 69, 144), (67, 71, 173), open_menu, 255,50)
         draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que,  0)
-        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (102, 95, 172), (131, 127, 189), toggle_music,255, 50)
+        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (58, 69, 144), (67, 71, 173), toggle_music,255, 50)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -455,6 +484,8 @@ def game_one():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return
+                elif event.key == pygame.K_p:
+                    pause_game()
 
         coins, score, last_coin_type = collect_coin(coins, players[1], score, last_coin_type)
 
@@ -464,13 +495,16 @@ def game_one():
 
 
         if not coins:
-            exit_row, exit_col = 13, 15
+            exit_row, exit_col = 14,11
             player_row = (players[1].rect.centery - OFFSET_Y) // CELL_SIZE
             player_col = (players[1].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
                 show_level_complete_window(1, backgrounds)
                 return
-
+        if show_menu_info:
+            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
+        if show_lab_info:
+            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
         pygame.time.wait(10)
         pygame.display.update()
 
@@ -515,10 +549,10 @@ def game_two():
             players[2].draw(back)
 
             if pygame.sprite.spritecollideany(players[2], enemies):
-                score = max(0, score - 3)
-            draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu, 255, 50)
-            draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que, 0)
-            draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (102, 95, 172), (131, 127, 189), toggle_music, 255, 50)
+                score = max(0, score - 2)
+            draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (58, 69, 144), (67, 71, 173), open_menu, 255, 50)
+            draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (58, 69, 144), open_que, 0)
+            draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (58, 69, 144), (67, 71, 173), toggle_music, 255, 50)
             for drop in rain:
                 drop.fall()
                 drop.draw(back)
@@ -527,20 +561,24 @@ def game_two():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         return
-                    if event.key == pygame.K_SPACE:
-                        coins, score, last_coin_type = collect_coin(coins, players[2], score, last_coin_type)
+                    elif event.key == pygame.K_p:
+                        pause_game()
 
             if not coins:
-                exit_row, exit_col = 13, 15
+                exit_row, exit_col = 14,11
                 player_row = (players[2].rect.centery - OFFSET_Y) // CELL_SIZE
                 player_col = (players[2].rect.centerx - OFFSET_X) // CELL_SIZE
                 if (player_row, player_col) == (exit_row, exit_col):
                     show_level_complete_window(2, backgrounds)
                     return
-
+            if show_menu_info:
+                show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
+            if show_lab_info:
+                show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
             clock.tick(60)
             pygame.display.update()
 
@@ -587,18 +625,23 @@ def game_three():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return
-                if event.key == pygame.K_SPACE:
+                elif event.key == pygame.K_p:
+                    pause_game()
+
                     coins, score, last_coin_type = collect_coin(coins, players[3], score, last_coin_type)
 
 
         if not coins:
-            exit_row, exit_col = 13, 15
+            exit_row, exit_col = 14,11
             player_row = (players[3].rect.centery - OFFSET_Y) // CELL_SIZE
             player_col = (players[3].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
-                show_level_complete_window(3)
+                show_level_complete_window(3, backgrounds)
                 return
-
+        if show_menu_info:
+            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
+        if show_lab_info:
+            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
         clock.tick(60)
         pygame.display.update()
 
@@ -609,15 +652,15 @@ def game_five():
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     start_time = pygame.time.get_ticks()
-    current_lab_map = lab_map_4
-    coins = generate_random_coins(lab_map_4, 15)
+    current_lab_map = lab_map_5
+    coins = generate_random_coins(lab_map_5, 15)
     last_coin_type = None
 
     clock = pygame.time.Clock()
     snowflakes = [Snowflake() for _ in range(200)]
     while True:
         back.blit(backgrounds["game5"], (0, 0))
-        draw_lab(back, lab_map_4)
+        draw_lab(back, lab_map_5)
         draw_timer(back)
         draw_score(back, score, last_coin_type)
 
@@ -632,19 +675,19 @@ def game_five():
         players[5].update(current_lab_map)
         players[5].draw(back)
         if pygame.sprite.spritecollideany(players[5], enemies):
-            score = max(0, score - 3)
+            score = max(0, score - 5)
         text = font9.render('', True, (50, 50, 50))
         text_rect = text.get_rect(center=(width // 2, height // 2))
         back.blit(text, text_rect)
 
-        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu,255, 50)
+        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (58, 69, 144), (67, 71, 173), open_menu,255, 50)
         draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que, 0)
-        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (102, 95, 172), (131, 127, 189), toggle_music,255, 50)
+        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (58, 69, 144), (67, 71, 173), toggle_music,255, 50)
         for snowflake in snowflakes:
             snowflake.update()
             snowflake.draw(back)
         if not coins:
-            exit_row, exit_col = 13, 15
+            exit_row, exit_col = 14,11
             player_row = (players[5].rect.centery - OFFSET_Y) // CELL_SIZE
             player_col = (players[5].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
@@ -658,7 +701,12 @@ def game_five():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return
-
+                elif event.key == pygame.K_p:
+                    pause_game()
+        if show_menu_info:
+            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
+        if show_lab_info:
+            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
         clock.tick(60)
         pygame.display.update()
 
@@ -818,14 +866,8 @@ def show_level_complete_window(level, backgrounds):
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 waiting = False
 
+
 backgrounds = load_images()
-
-# show_level_complete_window(1, backgrounds),
-# show_level_complete_window(2, backgrounds),
-# show_level_complete_window(3, backgrounds),
-# show_level_complete_window(4, backgrounds),
-# show_level_complete_window(5, backgrounds)
-
 
 if __name__ == "__main__":
     load_music()
