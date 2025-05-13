@@ -58,7 +58,7 @@ class Rain:
 class Flower:
     def __init__(self, image_path):
         self.image = pygame.image.load(image_path).convert_alpha()
-        scale = random.uniform(0.1, 0.2)
+        scale = random.uniform(0.001, 0.02)
         self.image = pygame.transform.scale(self.image, (
             int(self.image.get_width() * scale),
             int(self.image.get_height() * scale)
@@ -83,6 +83,27 @@ class Flower:
         rotated = pygame.transform.rotate(self.image, self.angle)
         rect = rotated.get_rect(center=(self.x, self.y))
         surface.blit(rotated, rect.topleft)
+
+
+class Snowflake:
+    def __init__(self):
+        self.x = random.randint(0, width)
+        self.y = random.randint(-20, height)
+        self.size = random.randint(5, 10)
+        self.speed_y = random.uniform(1, 3)
+        self.speed_x = random.uniform(-0.5, 0.5)
+        self.color = (255, 255, 255)
+
+    def update(self):
+        self.y += self.speed_y
+        self.x += self.speed_x
+
+        if self.y > height:
+            self.y = random.randint(-20, -1)
+            self.x = random.randint(0, width)
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.size)
 
 lab_map = [
     [3, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -177,8 +198,8 @@ lab_map_5 = [
 
 
 
-CELL_SIZE = 38
-OFFSET_X, OFFSET_Y = 220, 19
+CELL_SIZE = 37
+OFFSET_X, OFFSET_Y = 220, 23
 
 
 def draw_lab(surface, lab):

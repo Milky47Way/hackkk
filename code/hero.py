@@ -1,6 +1,6 @@
 import pygame
-CELL_SIZE = 38
-OFFSET_X, OFFSET_Y = 220, 19
+CELL_SIZE = 37
+OFFSET_X, OFFSET_Y = 220, 23
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, image_path, size, screen_width, screen_height, speed=5):

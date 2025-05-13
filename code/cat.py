@@ -3,16 +3,16 @@ import pygame
 import sys
 import os
 
-from lab import  lab_map, lab_map_2, lab_map_3, lab_map_4, lab_map_5, draw_lab, Cloud, Rain, Flower, find_spawn_point
+from lab import  lab_map, lab_map_2, lab_map_3, lab_map_4, lab_map_5, draw_lab, Cloud, Rain, Flower, Snowflake, find_spawn_point
 from coin import Coin, generate_random_coins
 from hero import Player
-from enemies import Enemy, img_enemy1, img_enemy2, img_enemy3, img_enemy4, img_enemy5
+from enemies import Enemy, img_enemy1, img_enemy2, img_enemy3, img_enemy4, img_enemy5, img_enemy6, img_enemy7
 
 pygame.mixer.init()
 pygame.init()
 
-CELL_SIZE = 38
-OFFSET_X, OFFSET_Y = 160, 19
+CELL_SIZE = 37
+OFFSET_X, OFFSET_Y = 220, 23
 
 #таймер
 start_ticks = pygame.time.get_ticks()
@@ -210,22 +210,24 @@ enemy2 = Enemy(102, 400, (520, 570), img_enemy2, (50,40), (1))
 enemy3 = Enemy(92, 320, (320, 370), img_enemy3, (40,40), (1))
 enemy4 = Enemy(92, 320, (320, 370), img_enemy4, (40,40), (1))
 enemy5 = Enemy(92, 320, (320, 370), img_enemy5, (40,40), (1))
+enemy6 = Enemy(110, 520, (320, 370), img_enemy6, (30,40), (1))
+enemy7 = Enemy(333, 120, (320, 370), img_enemy7, (40,40), (1))
 
 enemies_by_level = {
     1: pygame.sprite.Group(enemy1, enemy2, enemy3),
     2: pygame.sprite.Group(enemy1, enemy4),
-    3: pygame.sprite.Group(enemy1, enemy4),
+    3: pygame.sprite.Group(enemy4, enemy6, enemy7),
     4: pygame.sprite.Group(enemy4, enemy5),
-    5: pygame.sprite.Group(enemy4, enemy5),
+    5: pygame.sprite.Group(enemy4, enemy5)
 }
 
 #герой
 player = {
-    1: (lab_map, "img/hero.png", (20, 33), 5),
-    2: (lab_map_2, "img/hero.png", (20, 33), 4),
-    3: (lab_map_3, "img/hero.png", (20, 33), 3),
-    4: (lab_map_4, "img/hero.png", (20, 30), 5),
-    5: (lab_map, "img/hero.png", (20, 33), 5),
+    1: (lab_map, "img/hero.png", (25, 33), 5),
+    2: (lab_map_2, "img/hero.png", (25, 33), 4),
+    3: (lab_map_3, "img/hero.png", (25, 33), 3),
+    4: (lab_map_4, "img/hero.png", (25, 33), 2),
+    5: (lab_map, "img/hero.png", (25, 33), 1),
 }
 
 players= {}
@@ -349,21 +351,21 @@ def start_backk():
         pygame.display.update()
 
 #меню лабіринт
-def game_five():
+def game_four():
     global score, current_lab_map, coins, last_coin_type, current_level
     win_timer_started = False
     win_start_time = 0
     victory_screen_shown = False
-    current_level = 5
+    current_level = 4
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     start_time = pygame.time.get_ticks()
-    current_lab_map = lab_map_5
-    coins = generate_random_coins(lab_map, 10)
+    current_lab_map = lab_map_4
+    coins = generate_random_coins(lab_map, 20)
     last_coin_type = None
 
     while True:
-        back.blit(backgrounds["game5"], (0, 0))
+        back.blit(backgrounds["game4"], (0, 0))
         draw_lab(back, lab_map)
         draw_timer(back)
 
@@ -387,19 +389,19 @@ def game_five():
 
             if not coins:
                 exit_row, exit_col = 13, 15
-                player_row = (players[5].rect.centery - OFFSET_Y) // CELL_SIZE
-                player_col = (players[5].rect.centerx - OFFSET_X) // CELL_SIZE
+                player_row = (players[4].rect.centery - OFFSET_Y) // CELL_SIZE
+                player_col = (players[4].rect.centerx - OFFSET_X) // CELL_SIZE
                 if (player_row, player_col) == (exit_row, exit_col):
-                    show_level_complete_window(5, backgrounds)
+                    show_level_complete_window(4, backgrounds)
                     return
 
         enemies.update()
         enemies.draw(back)
 
-        players[5].update(current_lab_map)
-        players[5].draw(back)
+        players[4].update(current_lab_map)
+        players[4].draw(back)
 
-        if pygame.sprite.spritecollideany(players[5], enemies):
+        if pygame.sprite.spritecollideany(players[4], enemies):
             score = max(0, score - 3)
 
         draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu, 255, 50)
@@ -417,7 +419,7 @@ def game_one():
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     current_lab_map = lab_map
-    coins = generate_random_coins(lab_map, 15)
+    coins = generate_random_coins(lab_map, 10)
     last_coin_type = None
 
     clouds = [Cloud('img/game1/cloud.png') for _ in range(25)]
@@ -550,7 +552,7 @@ def game_three():
     coins = generate_random_coins(lab_map_3, 13)
     last_coin_type = None
 
-    flowers = [Flower('img/game3/floww.png') for _ in range(20)]
+    flowers = [Flower('img/game3/Flower.png') for _ in range(20)]
 
     clock = pygame.time.Clock()
 
@@ -600,21 +602,21 @@ def game_three():
         clock.tick(60)
         pygame.display.update()
 
-def game_four():
+def game_five():
     global score, current_lab_map, coins, last_coin_type, current_level
 
-    current_level = 4
+    current_level = 5
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     start_time = pygame.time.get_ticks()
     current_lab_map = lab_map_4
-    coins = generate_random_coins(lab_map_4, 1)
+    coins = generate_random_coins(lab_map_4, 15)
     last_coin_type = None
 
     clock = pygame.time.Clock()
-
+    snowflakes = [Snowflake() for _ in range(200)]
     while True:
-        back.blit(backgrounds["game4"], (0, 0))
+        back.blit(backgrounds["game5"], (0, 0))
         draw_lab(back, lab_map_4)
         draw_timer(back)
         draw_score(back, score, last_coin_type)
@@ -625,11 +627,11 @@ def game_four():
         for coin in coins:
             coin.draw(back)
 
-        coins, score, last_coin_type = collect_coin(coins, players[4], score, last_coin_type)
+        coins, score, last_coin_type = collect_coin(coins, players[5], score, last_coin_type)
 
-        players[4].update(current_lab_map)
-        players[4].draw(back)
-        if pygame.sprite.spritecollideany(players[4], enemies):
+        players[5].update(current_lab_map)
+        players[5].draw(back)
+        if pygame.sprite.spritecollideany(players[5], enemies):
             score = max(0, score - 3)
         text = font9.render('', True, (50, 50, 50))
         text_rect = text.get_rect(center=(width // 2, height // 2))
@@ -638,13 +640,15 @@ def game_four():
         draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu,255, 50)
         draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que, 0)
         draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (102, 95, 172), (131, 127, 189), toggle_music,255, 50)
-
+        for snowflake in snowflakes:
+            snowflake.update()
+            snowflake.draw(back)
         if not coins:
             exit_row, exit_col = 13, 15
-            player_row = (players[4].rect.centery - OFFSET_Y) // CELL_SIZE
-            player_col = (players[4].rect.centerx - OFFSET_X) // CELL_SIZE
+            player_row = (players[5].rect.centery - OFFSET_Y) // CELL_SIZE
+            player_col = (players[5].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
-                show_level_complete_window(4, backgrounds)
+                show_level_complete_window(5, backgrounds)
                 return
 
         for event in pygame.event.get():

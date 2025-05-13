@@ -5,7 +5,7 @@ width = 800
 height = 600
 back = pygame.display.set_mode((width, height))
 
-CELL_SIZE = 38
+CELL_SIZE = 37
 OFFSET_X, OFFSET_Y = 215, 14
 
 pygame.init()
