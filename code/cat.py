@@ -3,7 +3,7 @@ import pygame
 import sys
 import os
 
-from lab import  lab_map, lab_map_2, lab_map_3, lab_map_4, draw_lab, Cloud, Rain, Flower, find_spawn_point
+from lab import  lab_map, lab_map_2, lab_map_3, lab_map_4, lab_map_5, draw_lab, Cloud, Rain, Flower, find_spawn_point
 from coin import Coin, generate_random_coins
 from hero import Player
 from enemies import Enemy, img_enemy1, img_enemy2, img_enemy3, img_enemy4, img_enemy5
@@ -358,7 +358,7 @@ def game_five():
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     start_time = pygame.time.get_ticks()
-    current_lab_map = lab_map
+    current_lab_map = lab_map_5
     coins = generate_random_coins(lab_map, 10)
     last_coin_type = None
 
