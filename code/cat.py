@@ -509,9 +509,7 @@ def game_two():
             for coin in coins:
                 coin.draw(back)
 
-            for drop in rain:
-                drop.fall()
-                drop.draw(back)
+
 
             players[2].update(current_lab_map)
             players[2].draw(back)
@@ -521,6 +519,9 @@ def game_two():
             draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu, 255, 50)
             draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que, 0)
             draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (102, 95, 172), (131, 127, 189), toggle_music, 255, 50)
+            for drop in rain:
+                drop.fall()
+                drop.draw(back)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -568,9 +569,6 @@ def game_three():
         for coin in coins:
             coin.draw(back)
 
-        for flower in flowers:
-            flower.fall()
-            flower.draw(back)
 
         players[3].update(current_lab_map)
         players[3].draw(back)
@@ -579,7 +577,9 @@ def game_three():
         draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu,255, 50)
         draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que, 0)
         draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (102, 95, 172), (131, 127, 189), toggle_music,255, 50)
-
+        for flower in flowers:
+            flower.fall()
+            flower.draw(back)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()

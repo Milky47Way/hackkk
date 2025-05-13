@@ -89,7 +89,7 @@ class Snowflake:
     def __init__(self):
         self.x = random.randint(0, width)
         self.y = random.randint(-20, height)
-        self.size = random.randint(5, 10)
+        self.size = random.choice([1, 4])
         self.speed_y = random.uniform(1, 3)
         self.speed_x = random.uniform(-0.5, 0.5)
         self.color = (255, 255, 255)
