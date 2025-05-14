@@ -151,16 +151,16 @@ def load_images():
         "game11": load_tif_image('img/game1/game11.tif', (800, 600)),
 
         "game2": load_tif_image('img/game2/game2.tif', (800, 600)),
-        "game22": load_tif_image('img/game2/game.back2.tif', (800, 600)),
+        "game22": load_tif_image('img/game2/game22.tif', (800, 600)),
 
         "game3": load_tif_image('img/game3/game3.tif', (800, 600)),
-        "game33": load_tif_image('img/game3/game.back3.tif', (800, 600)),
+        "game33": load_tif_image('img/game3/game33.tif', (800, 600)),
 
         "game4": load_tif_image('img/game4/game4.tif', (800, 600)),
-        "game44": load_tif_image('img/game4/game.back4.tif', (800, 600)),
+        "game44": load_tif_image('img/game4/game44.tif', (800, 600)),
 
         "game5": load_tif_image('img/game5/game5.tif', (800, 600)),
-        "game55": load_tif_image('img/game5/game.final.tif', (800, 600)),
+        "game55": load_tif_image('img/game5/game55.tif', (800, 600)),
     }
     return backgrounds
 
