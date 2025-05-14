@@ -161,6 +161,8 @@ def load_images():
 
         "game5": load_tif_image('img/game5/game5.tif', (800, 600)),
         "game55": load_tif_image('img/game5/game55.tif', (800, 600)),
+
+        "game_final": load_tif_image('img/game5/game.final.tif', (800, 600)),
     }
     return backgrounds
 
@@ -448,7 +450,7 @@ def game_one():
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     current_lab_map = lab_map
-    coins = generate_random_coins(lab_map, 10)
+    coins = generate_random_coins(lab_map, 1)
     last_coin_type = None
 
     clouds = [Cloud('img/game1/cloud.png') for _ in range(25)]
@@ -524,7 +526,7 @@ def game_two():
         enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
         current_lab_map = lab_map_2
-        coins = generate_random_coins(lab_map_2, 12)
+        coins = generate_random_coins(lab_map_2, 1)
         last_coin_type = None
 
         rain = [Rain() for _ in range(100)]
@@ -843,11 +845,11 @@ def show_level_complete_window(level, backgrounds):
     if level == 1:
         image_surface = backgrounds["game11"]
     elif level == 2:
-        image_surface = backgrounds["game22"]
+        image_surface = backgrounds["game_final"]
     elif level == 3:
         image_surface = backgrounds["game33"]
     elif level == 4:
-        image_surface = backgrounds["game44"]
+        image_surface = backgrounds["game22"]
     elif level == 5:
         image_surface = backgrounds["game55"]
     else:
