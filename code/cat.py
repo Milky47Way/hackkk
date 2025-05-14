@@ -423,8 +423,8 @@ def game_four():
                     return
                 elif event.key == pygame.K_p:
                     pause_game()
-
-        coins, score, last_coin_type = collect_coin(coins, players[4], score, last_coin_type)
+                elif event.key == pygame.K_SPACE:
+                    coins, score, last_coin_type = collect_coin(coins, players[4], score, last_coin_type)
 
         if not coins:
             exit_row, exit_col = 14, 11
@@ -486,8 +486,8 @@ def game_one():
                     return
                 elif event.key == pygame.K_p:
                     pause_game()
-
-        coins, score, last_coin_type = collect_coin(coins, players[1], score, last_coin_type)
+                elif event.key == pygame.K_SPACE:
+                    coins, score, last_coin_type = collect_coin(coins, players[1], score, last_coin_type)
 
         for cloud in clouds:
             cloud.move()
@@ -567,7 +567,8 @@ def game_two():
                         return
                     elif event.key == pygame.K_p:
                         pause_game()
-
+                    elif event.key == pygame.K_SPACE:
+                        coins, score, last_coin_type = collect_coin(coins, players[2], score, last_coin_type)
             if not coins:
                 exit_row, exit_col = 14,11
                 player_row = (players[2].rect.centery - OFFSET_Y) // CELL_SIZE
@@ -627,6 +628,7 @@ def game_three():
                     return
                 elif event.key == pygame.K_p:
                     pause_game()
+                elif event.key == pygame.K_SPACE:
 
                     coins, score, last_coin_type = collect_coin(coins, players[3], score, last_coin_type)
 
@@ -703,6 +705,8 @@ def game_five():
                     return
                 elif event.key == pygame.K_p:
                     pause_game()
+                elif event.key == pygame.K_SPACE:
+                    coins, score, last_coin_type = collect_coin(coins, players[5], score, last_coin_type)
         if show_menu_info:
             show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
         if show_lab_info:
