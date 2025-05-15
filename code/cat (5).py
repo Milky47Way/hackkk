@@ -14,7 +14,6 @@ pygame.init()
 CELL_SIZE = 37
 OFFSET_X, OFFSET_Y = 220, 23
 
-
 #таймер
 start_ticks = pygame.time.get_ticks()
 time_limit = 25 * 60
@@ -164,7 +163,6 @@ def load_images():
         "game55": load_tif_image('img/game5/game55.tif', (800, 600)),
 
         "game_final": load_tif_image('img/game5/game.final.tif', (800, 600)),
-        "game_final2": load_tif_image('img/game5/game.final2.tif', (800, 600)),
     }
     return backgrounds
 
@@ -212,7 +210,6 @@ def pause_game():
 def unpause_game():
     global paused
     paused = False
-
 
 #змінні
 white = (255, 255, 255)
@@ -387,7 +384,7 @@ def game_four():
     current_level = 4
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
     current_lab_map = lab_map_4
-    coins = generate_random_coins(current_lab_map, 1)  # Наприклад, 5 монет
+    coins = generate_random_coins(current_lab_map, 20)  # Наприклад, 5 монет
     total_coins = len(coins)
     last_coin_type = None
 
@@ -433,6 +430,7 @@ def game_four():
 
         if not coins:
             exit_row, exit_col = 14, 11
+            #draw_exit(back, exit_row, exit_col)
             player_row = (players[4].rect.centery - OFFSET_Y) // CELL_SIZE
             player_col = (players[4].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
@@ -453,7 +451,7 @@ def game_one():
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     current_lab_map = lab_map
-    coins = generate_random_coins(lab_map, 1)
+    coins = generate_random_coins(lab_map, 10)
     last_coin_type = None
 
     clouds = [Cloud('img/game1/cloud.png') for _ in range(25)]
@@ -530,7 +528,7 @@ def game_two():
         enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
         current_lab_map = lab_map_2
-        coins = generate_random_coins(lab_map_2, 1)
+        coins = generate_random_coins(lab_map_2, 12)
         last_coin_type = None
 
         rain = [Rain() for _ in range(100)]
@@ -582,6 +580,7 @@ def game_two():
                 if (player_row, player_col) == (exit_row, exit_col):
                     show_level_complete_window(2, backgrounds)
                     main_menu()
+
                     return
             if show_menu_info:
                 show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
@@ -596,7 +595,7 @@ def game_three():
     current_level = 3
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
     current_lab_map = lab_map_3
-    coins = generate_random_coins(lab_map_3, 1)
+    coins = generate_random_coins(lab_map_3, 13)
     last_coin_type = None
 
     flowers = [Flower('img/game3/Flower.png') for _ in range(20)]
@@ -663,7 +662,7 @@ def game_five():
 
     start_time = pygame.time.get_ticks()
     current_lab_map = lab_map_5
-    coins = generate_random_coins(lab_map_5, 1)
+    coins = generate_random_coins(lab_map_5, 15)
     last_coin_type = None
 
     clock = pygame.time.Clock()
