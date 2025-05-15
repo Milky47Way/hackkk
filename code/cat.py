@@ -384,7 +384,7 @@ def game_four():
     current_level = 4
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
     current_lab_map = lab_map_4
-    coins = generate_random_coins(current_lab_map, 2)  # Наприклад, 5 монет
+    coins = generate_random_coins(current_lab_map, 20)  # Наприклад, 5 монет
     total_coins = len(coins)
     last_coin_type = None
 
@@ -450,7 +450,7 @@ def game_one():
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     current_lab_map = lab_map
-    coins = generate_random_coins(lab_map, 1)
+    coins = generate_random_coins(lab_map, 10)
     last_coin_type = None
 
     clouds = [Cloud('img/game1/cloud.png') for _ in range(25)]
