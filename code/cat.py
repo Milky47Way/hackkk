@@ -333,7 +333,7 @@ def main_menu():
 
         draw_button("Start", button_x, buttonS_y, button_w, button_h, (124, 128, 81), (156, 162, 118), start_backk, 255, 50)
         draw_button("Info", button_x, buttonI_y, button_w, button_h, (197, 143, 99), (213, 171, 129), info_back, 255, 50)
-        draw_button("Settings", button_xs, buttonSet_y, button_w, button_h, (58, 57, 70), (89, 85, 104), settings_back, 255, 50)
+        draw_button("Settings", button_xs, buttonSet_y, button_w, button_h, (42, 70, 61), (71, 107, 96), settings_back, 255, 50)
 
         for event in pygame.event.get():
                         if event.type == pygame.QUIT:
@@ -804,7 +804,7 @@ def settings_back():
 
 
         music_text = "Music: ON" if music_on else "Music: OFF"
-        draw_button(music_text, width // 2 - 150, height // 4, 300, 60, (63, 91, 120), (137, 167, 200), toggle_music)
+        draw_button(music_text, width // 2 - 150, height // 4, 300, 60, (63, 91, 120), (137, 167, 200))
         draw_button('Menu', width // 2 - 150, height // 2, 300, 60, (63, 91, 120), (137, 167, 200), return_to_main_menu)
 
 
