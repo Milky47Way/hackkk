@@ -351,7 +351,6 @@ def start_backk():
 
         back.blit(backgrounds["menu_game"],(0,0))
         draw_timer(back, text_alpha=0)
-        #back.fill((240, 240, 240))
         font_big = pygame.font.SysFont(None, 80)
         text = font_big.render('', True, (50, 50, 50))
         text_rect = text.get_rect(center=(width // 2, height // 2))
@@ -388,7 +387,7 @@ def game_four():
     current_level = 4
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
     current_lab_map = lab_map_4
-    coins = generate_random_coins(current_lab_map, 14)  # Наприклад, 5 монет
+    coins = generate_random_coins(current_lab_map, 14) 
     total_coins = len(coins)
     last_coin_type = None
 
@@ -439,7 +438,6 @@ def game_four():
 
         if not coins:
             exit_row, exit_col = 14, 11
-            #draw_exit(back, exit_row, exit_col)
             player_row = (players[4].rect.centery - OFFSET_Y) // CELL_SIZE
             player_col = (players[4].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
@@ -467,7 +465,7 @@ def game_one():
 
     clock = pygame.time.Clock()
     last_hit_time = 0
-    hit_cooldown = 1000  # миллисекунд
+    hit_cooldown = 1000  
 
     while True:
         back.blit(backgrounds["game1"], (0, 0))
@@ -521,11 +519,9 @@ def game_one():
                 return
 
         if show_menu_info:
-            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300,
-                              bg_color=(131, 127, 189))
+            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
         if show_lab_info:
-            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150,
-                              bg_color=(131, 127, 189))
+            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
 
         clock.tick(60)
         pygame.display.update()
