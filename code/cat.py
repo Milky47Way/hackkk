@@ -20,7 +20,7 @@ time_limit = 25 * 60
 
 #музика та ефекти
 music_on = True
-music_path = os.path.join(os.path.dirname(__file__), "res/sounds/The Cascades - Rhythm of the Rain.mp3")
+music_path = os.path.join(os.path.dirname(__file__), "res/sounds/Rhythm of the Rain.mp3")
 
 def toggle_music():
     global music_on
