@@ -379,12 +379,16 @@ def start_backk():
         pygame.time.wait(10)
         pygame.display.update()
 
+
+
 def game_four():
     global score, current_lab_map, coins, last_coin_type, current_level
+    last_hit_time = 0
+    hit_cooldown = 1000
     current_level = 4
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
     current_lab_map = lab_map_4
-    coins = generate_random_coins(current_lab_map, 20)  # Наприклад, 5 монет
+    coins = generate_random_coins(current_lab_map, 14)  # Наприклад, 5 монет
     total_coins = len(coins)
     last_coin_type = None
 
@@ -405,8 +409,13 @@ def game_four():
         players[4].update(current_lab_map)
         players[4].draw(back)
 
-        if pygame.sprite.spritecollideany(players[4], enemies):
-            score = max(0, score - 4)
+        now = pygame.time.get_ticks()
+        collided_enemy = pygame.sprite.spritecollideany(players[5], enemies)
+
+        if collided_enemy and now - last_hit_time > hit_cooldown:
+            if players[5].rect.colliderect(collided_enemy.rect):
+                score = max(0, score - 1)
+                last_hit_time = now
 
         # Кнопки
         draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38,
@@ -435,12 +444,12 @@ def game_four():
             player_col = (players[4].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
                 show_level_complete_window(4, backgrounds)
-                start_backk()
+
                 return
         if show_menu_info:
             show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
         if show_lab_info:
-            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
+            show_queue_window('res/txt/lab.txt', width=340, height=340, x=0, y=150, bg_color=(131, 127, 189))
         clock.tick(60)
         pygame.display.update()
 
@@ -456,6 +465,10 @@ def game_one():
 
     clouds = [Cloud('img/game1/cloud.png') for _ in range(25)]
 
+    clock = pygame.time.Clock()
+    last_hit_time = 0
+    hit_cooldown = 1000  # миллисекунд
+
     while True:
         back.blit(backgrounds["game1"], (0, 0))
         draw_lab(back, lab_map)
@@ -465,25 +478,31 @@ def game_one():
         enemies.update()
         enemies.draw(back)
 
-
         for coin in coins:
             coin.draw(back)
 
         players[1].update(current_lab_map)
         players[1].draw(back)
 
-        if pygame.sprite.spritecollideany(players[1], enemies):
-            score = max(0, score - 1)
+        now = pygame.time.get_ticks()
+        collided_enemy = pygame.sprite.spritecollideany(players[1], enemies)
+        if collided_enemy and now - last_hit_time > hit_cooldown:
+            if players[1].rect.colliderect(collided_enemy.rect):
+                score = max(0, score - 1)
+                last_hit_time = now
 
-        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (58, 69, 144), (67, 71, 173), open_menu, 255,50)
-        draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que,  0)
-        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (58, 69, 144), (67, 71, 173), toggle_music,255, 50)
+        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38,(58, 69, 144), (67, 71, 173), open_menu, 255, 50)
+        draw_circle_button('', width // 2 - 290, height // 2 + 157, 30,(131, 127, 189), open_que, 0)
+        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38,(58, 69, 144), (67, 71, 173), toggle_music, 255, 50)
+
+        for cloud in clouds:
+            cloud.move()
+            cloud.draw(back)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return
@@ -492,24 +511,23 @@ def game_one():
                 elif event.key == pygame.K_SPACE:
                     coins, score, last_coin_type = collect_coin(coins, players[1], score, last_coin_type)
 
-        for cloud in clouds:
-            cloud.move()
-            cloud.draw(back)
-
-
         if not coins:
-            exit_row, exit_col = 14,11
+            exit_row, exit_col = 14, 11
             player_row = (players[1].rect.centery - OFFSET_Y) // CELL_SIZE
             player_col = (players[1].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
                 show_level_complete_window(1, backgrounds)
                 start_backk()
                 return
+
         if show_menu_info:
-            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
+            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300,
+                              bg_color=(131, 127, 189))
         if show_lab_info:
-            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
-        pygame.time.wait(10)
+            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150,
+                              bg_color=(131, 127, 189))
+
+        clock.tick(60)
         pygame.display.update()
 
 def collect_coin(coins, player, score, last_coin_type):
@@ -523,12 +541,13 @@ def collect_coin(coins, player, score, last_coin_type):
 
 def game_two():
         global score, current_lab_map, coins, last_coin_type, current_level
-
+        last_hit_time = 0
+        hit_cooldown = 1000
         current_level = 2
         enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
         current_lab_map = lab_map_2
-        coins = generate_random_coins(lab_map_2, 12)
+        coins = generate_random_coins(lab_map_2, 10)
         last_coin_type = None
 
         rain = [Rain() for _ in range(100)]
@@ -547,16 +566,23 @@ def game_two():
             for coin in coins:
                 coin.draw(back)
 
-
-
             players[2].update(current_lab_map)
             players[2].draw(back)
 
-            if pygame.sprite.spritecollideany(players[2], enemies):
-                score = max(0, score - 2)
-            draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (58, 69, 144), (67, 71, 173), open_menu, 255, 50)
+            now = pygame.time.get_ticks()
+            collided_enemy = pygame.sprite.spritecollideany(players[2], enemies)
+
+            if collided_enemy and now - last_hit_time > hit_cooldown:
+                if players[2].rect.colliderect(collided_enemy.rect):
+                    score = max(0, score - 1)
+                    last_hit_time = now
+
+            draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (58, 69, 144), (67, 71, 173), open_menu,
+                        255, 50)
             draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (58, 69, 144), open_que, 0)
-            draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (58, 69, 144), (67, 71, 173), toggle_music, 255, 50)
+            draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (58, 69, 144), (67, 71, 173),
+                        toggle_music, 255, 50)
+
             for drop in rain:
                 drop.fall()
                 drop.draw(back)
@@ -573,24 +599,29 @@ def game_two():
                         pause_game()
                     elif event.key == pygame.K_SPACE:
                         coins, score, last_coin_type = collect_coin(coins, players[2], score, last_coin_type)
+
             if not coins:
-                exit_row, exit_col = 14,11
+                exit_row, exit_col = 14, 11
                 player_row = (players[2].rect.centery - OFFSET_Y) // CELL_SIZE
                 player_col = (players[2].rect.centerx - OFFSET_X) // CELL_SIZE
                 if (player_row, player_col) == (exit_row, exit_col):
                     show_level_complete_window(2, backgrounds)
                     main_menu()
-
                     return
+
             if show_menu_info:
                 show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
             if show_lab_info:
-                show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
+                show_queue_window('res/txt/lab.txt', width=340, height=340, x=0, y=150, bg_color=(131, 127, 189))
+
             clock.tick(60)
             pygame.display.update()
 
 def game_three():
     global score, current_lab_map, coins, last_coin_type, current_level
+
+    last_hit_time = 0
+    hit_cooldown = 1000
 
     current_level = 3
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
@@ -614,17 +645,24 @@ def game_three():
         for coin in coins:
             coin.draw(back)
 
-
         players[3].update(current_lab_map)
         players[3].draw(back)
-        if pygame.sprite.spritecollideany(players[3], enemies):
-            score = max(0, score - 3)
-        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38, (102, 95, 172), (131, 127, 189), open_menu,255, 50)
-        draw_circle_button('', width // 2 - 290, height // 2 + 157, 30, (131, 127, 189), open_que, 0)
-        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38, (102, 95, 172), (131, 127, 189), toggle_music,255, 50)
+
+        now = pygame.time.get_ticks()
+        collided_enemy = pygame.sprite.spritecollideany(players[3], enemies)
+        if collided_enemy and now - last_hit_time > hit_cooldown:
+            if players[3].rect.colliderect(collided_enemy.rect):
+                score = max(0, score - 3)
+                last_hit_time = now
+
+        draw_button('menu', width // 2 - 366, height // 2 + 20, 116, 38,(102, 95, 172), (131, 127, 189), open_menu, 255, 50)
+        draw_circle_button('', width // 2 - 290, height // 2 + 157, 30,(131, 127, 189), open_que, 0)
+        draw_button('music', width // 2 - 365, height // 2 + 78, 116, 38,(102, 95, 172), (131, 127, 189), toggle_music, 255, 50)
+
         for flower in flowers:
             flower.fall()
             flower.draw(back)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -635,34 +673,36 @@ def game_three():
                 elif event.key == pygame.K_p:
                     pause_game()
                 elif event.key == pygame.K_SPACE:
-
                     coins, score, last_coin_type = collect_coin(coins, players[3], score, last_coin_type)
 
-
         if not coins:
-            exit_row, exit_col = 14,11
+            exit_row, exit_col = 14, 11
             player_row = (players[3].rect.centery - OFFSET_Y) // CELL_SIZE
             player_col = (players[3].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
                 show_level_complete_window(3, backgrounds)
-                start_backk()
                 return
+
         if show_menu_info:
-            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
+            show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300,
+                              bg_color=(131, 127, 189))
         if show_lab_info:
-            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
+            show_queue_window('res/txt/lab.txt', width=340, height=340, x=0, y=150,
+                              bg_color=(131, 127, 189))
+
         clock.tick(60)
         pygame.display.update()
 
 def game_five():
     global score, current_lab_map, coins, last_coin_type, current_level
-
+    last_hit_time = 0
+    hit_cooldown = 1000
     current_level = 5
     enemies = enemies_by_level.get(current_level, pygame.sprite.Group())
 
     start_time = pygame.time.get_ticks()
     current_lab_map = lab_map_5
-    coins = generate_random_coins(lab_map_5, 15)
+    coins = generate_random_coins(lab_map_5, 12)
     last_coin_type = None
 
     clock = pygame.time.Clock()
@@ -683,8 +723,16 @@ def game_five():
 
         players[5].update(current_lab_map)
         players[5].draw(back)
-        if pygame.sprite.spritecollideany(players[5], enemies):
-            score = max(0, score - 5)
+
+        now = pygame.time.get_ticks()
+        collided_enemy = pygame.sprite.spritecollideany(players[5], enemies)
+
+        if collided_enemy and now - last_hit_time > hit_cooldown:
+            if players[5].rect.colliderect(collided_enemy.rect):
+                score = max(0, score - 1)
+                last_hit_time = now
+
+
         text = font9.render('', True, (50, 50, 50))
         text_rect = text.get_rect(center=(width // 2, height // 2))
         back.blit(text, text_rect)
@@ -701,7 +749,7 @@ def game_five():
             player_col = (players[5].rect.centerx - OFFSET_X) // CELL_SIZE
             if (player_row, player_col) == (exit_row, exit_col):
                 show_level_complete_window(5, backgrounds)
-                start_backk()
+
                 return
 
         for event in pygame.event.get():
@@ -718,7 +766,7 @@ def game_five():
         if show_menu_info:
             show_queue_window('res/txt/menu.txt', width=180, height=40, x=0, y=300, bg_color=(131, 127, 189))
         if show_lab_info:
-            show_queue_window('res/txt/lab.txt', width=300, height=300, x=0, y=150, bg_color=(131, 127, 189))
+            show_queue_window('res/txt/lab.txt', width=340, height=340, x=0, y=150, bg_color=(131, 127, 189))
         clock.tick(60)
         pygame.display.update()
 
@@ -873,10 +921,9 @@ def show_level_complete_window(level, backgrounds):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                waiting = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                waiting = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE or event.key == pygame.K_RETURN:
+                    waiting = False
 
 
 backgrounds = load_images()
